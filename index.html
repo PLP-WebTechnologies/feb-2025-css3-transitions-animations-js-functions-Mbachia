@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Switcher</title>
+    <style>
+        /* Base styles with transitions */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #333;
+            --transition-speed: 0.5s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            transition: color var(--transition-speed);
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        /* Button styles with transitions */
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        /* Theme controls */
+        .theme-controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* Pulse animation for active theme */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .active-theme {
+            border: 2px solid var(--secondary-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Fade-in animation for content */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s forwards;
+        }
+
+        /* Theme styles */
+        body.dark-theme {
+            --primary-color: #3498db;
+            --secondary-color: #1abc9c;  
+            --background-color: #2c3e50;
+            --text-color: #ecf0f1;
+        }
+
+        body.nature-theme {
+            --primary-color: #27ae60;
+            --secondary-color: #f39c12;
+            --background-color: #f1f8e9;
+            --text-color: #333;
+        }
+
+        body.sunset-theme {
+            --primary-color: #e74c3c;
+            --secondary-color: #f39c12;
+            --background-color: #ffeaa7;
+            --text-color: #2c3e50;
+        }
+
+        /* Name form */
+        .name-form {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .greeting {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Theme color preview swatches */
+        .color-preview {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.2);
+        }
+
+        .primary-swatch {
+            background-color: var(--primary-color);
+        }
+
+        .secondary-swatch {
+            background-color: var(--secondary-color);
+        }
+
+        .background-swatch {
+            background-color: var(--background-color);
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <h1>Theme Switcher</h1>
+        
+        <div class="name-form">
+            <input type="text" id="userName" placeholder="Enter your name">
+            <button class="button" id="saveNameBtn">Save</button>
+            <p id="greeting"></p>
+        </div>
+
+        <p>Select your preferred theme below. Your choice will be saved and automatically applied the next time you visit.</p>
+        
+        <div class="theme-controls">
+            <button class="button" id="defaultTheme">Default</button>
+            <button class="button" id="darkTheme">Dark</button>
+            <button class="button" id="natureTheme">Nature</button>
+            <button class="button" id="sunsetTheme">Sunset</button>
+        </div>
+
+        <p>Current Theme Colors:</p>
+        <div class="color-preview">
+            <div class="color-swatch primary-swatch" title="Primary Color"></div>
+            <div class="color-swatch secondary-swatch" title="Secondary Color"></div>
+            <div class="color-swatch background-swatch" title="Background Color"></div>
+        </div>
+
+        <p>This project demonstrates:</p>
+        <ul>
+            <li>CSS transitions for smooth color changes</li>
+            <li>CSS animations (pulse effect on active theme button, fade-in effect)</li>
+            <li>localStorage for saving user preferences</li>
+            <li>JavaScript functions to manage themes and user interactions</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const buttons = {
+                default: document.getElementById('defaultTheme'),
+                dark: document.getElementById('darkTheme'),
+                nature: document.getElementById('natureTheme'),
+                sunset: document.getElementById('sunsetTheme')
+            };
+            
+            const saveNameBtn = document.getElementById('saveNameBtn');
+            const userNameInput = document.getElementById('userName');
+            const greetingEl = document.getElementById('greeting');
+            
+            // Apply saved preferences when page loads
+            loadPreferences();
+            
+            // Set up event listeners for theme buttons
+            buttons.default.addEventListener('click', () => setTheme('default'));
+            buttons.dark.addEventListener('click', () => setTheme('dark'));
+            buttons.nature.addEventListener('click', () => setTheme('nature'));
+            buttons.sunset.addEventListener('click', () => setTheme('sunset'));
+            
+            // Save user name
+            saveNameBtn.addEventListener('click', saveName);
+            
+            /**
+             * Sets the theme and saves preference to localStorage
+             * @param {string} theme - The theme name to apply
+             */
+            function setTheme(theme) {
+                // Remove all theme classes
+                document.body.classList.remove('dark-theme', 'nature-theme', 'sunset-theme');
+                
+                // Remove active class from all buttons
+                Object.values(buttons).forEach(btn => {
+                    btn.classList.remove('active-theme');
+                });
+                
+                // Apply the selected theme
+                if (theme !== 'default') {
+                    document.body.classList.add(`${theme}-theme`);
+                }
+                
+                // Add active class to selected button
+                buttons[theme].classList.add('active-theme');
+                
+                // Save to localStorage
+                localStorage.setItem('preferredTheme', theme);
+                
+                // Trigger animation on color swatches
+                animateColorSwatches();
+            }
+            
+            /**
+             * Animates the color swatches to highlight the change
+             */
+            function animateColorSwatches() {
+                const swatches = document.querySelectorAll('.color-swatch');
+                swatches.forEach((swatch, index) => {
+                    // Remove existing animation
+                    swatch.style.animation = 'none';
+                    
+                    // Force reflow
+                    void swatch.offsetWidth;
+                    
+                    // Add animation with delay based on index
+                    swatch.style.animation = `pulse 1s ${index * 0.2}s`;
+                });
+            }
+            
+            /**
+             * Saves the user's name to localStorage
+             */
+            function saveName() {
+                const name = userNameInput.value.trim();
+                if (name) {
+                    localStorage.setItem('userName', name);
+                    displayGreeting(name);
+                    
+                    // Add a little animation to the greeting
+                    greetingEl.style.animation = 'none';
+                    void greetingEl.offsetWidth;
+                    greetingEl.style.animation = 'fadeIn 0.5s forwards';
+                }
+            }
+            
+            /**
+             * Displays a personalized greeting message
+             * @param {string} name - The user's name
+             */
+            function displayGreeting(name) {
+                const currentHour = new Date().getHours();
+                let greeting;
+                
+                if (currentHour < 12) {
+                    greeting = "Good morning";
+                } else if (currentHour < 18) {
+                    greeting = "Good afternoon";
+                } else {
+                    greeting = "Good evening";
+                }
+                
+                greetingEl.textContent = `${greeting}, ${name}! Welcome back.`;
+            }
+            
+            /**
+             * Loads saved preferences from localStorage
+             */
+            function loadPreferences() {
+                // Load theme preference
+                const savedTheme = localStorage.getItem('preferredTheme') || 'default';
+                setTheme(savedTheme);
+                
+                // Load user name if available
+                const savedName = localStorage.getItem('userName');
+                if (savedName) {
+                    userNameInput.value = savedName;
+                    displayGreeting(savedName);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
